@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وكالة خيال | Khayal Agency</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome (Icon Font) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0b1120',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                        },
+                        gold: '#d4af37',
+                        goldHover: '#b8962c',
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0b1120;
+            color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, h4, h5, h6, .font-cairo {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b8962c; }
+
+        /* Chart Container Specs */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 400px; }
+        }
+
+        /* Portfolio Filters */
+        .filter-btn.active {
+            background-color: #d4af37;
+            color: #0b1120;
+            border-color: #d4af37;
+        }
+        
+        /* Portfolio Item Transition */
+        .portfolio-item {
+            transition: all 0.4s ease-in-out;
+            transform: scale(1);
+            opacity: 1;
+        }
+        .portfolio-item.hidden-item {
+            transform: scale(0.8);
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        /* Timeline Styles */
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 20px;
+            width: 2px;
+            background: #d4af37;
+            opacity: 0.3;
+        }
+        .timeline-step {
+            position: relative;
+            padding-right: 50px;
+            margin-bottom: 2rem;
+        }
+        .timeline-icon {
+            position: absolute;
+            right: 4px;
+            top: 0;
+            width: 34px;
+            height: 34px;
+            background: #0f172a;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            z-index: 10;
+        }
+
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="Untitled design.jpg" alt="شعار خيال" class="h-12 w-auto object-contain rounded">
+                    <span class="font-cairo font-bold text-2xl text-gold tracking-wider">وكالة خيال</span>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 space-x-reverse">
+                    <a href="#home" class="text-gray-300 hover:text-gold transition px-3 py-2 font-medium">الرئيسية</a>
+                    <a href="#services" class="text-gray-300 hover:text-gold transition px-3 py-2 font-medium">خدماتنا</a>
+                    <a href="#portfolio" class="text-gray-300 hover:text-gold transition px-3 py-2 font-medium">أعمالنا</a>
+                    <a href="#packages" class="text-gray-300 hover:text-gold transition px-3 py-2 font-medium">الباقات</a>
+                    <a href="#workflow" class="text-gray-300 hover:text-gold transition px-3 py-2 font-medium">آلية العمل</a>
+                </div>
+                <!-- Contact Button -->
+                <div class="hidden md:block">
+                    <a href="#contact" class="bg-gold hover:bg-goldHover text-navy-900 px-6 py-2 rounded-full font-bold transition duration-300">تواصل معنا</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex items-center min-h-screen">
+        <!-- Abstract Background Elements -->
+        <div class="absolute top-1/4 right-0 w-96 h-96 bg-gold rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div class="absolute top-1/3 left-0 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <img src="Untitled design.jpg" alt="شعار خيال" class="h-40 w-auto mx-auto mb-8 rounded-lg shadow-2xl border border-gold/20 object-contain bg-navy-900">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6">
+                مرحباً بكم في <span class="text-gold">وكالة خيال</span>
+            </h1>
+            <p class="text-xl md:text-3xl font-cairo text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                حيث لا حدود للخيال!
+            </p>
+            <p class="text-lg text-gray-400 mb-10 max-w-2xl mx-auto leading-loose">
+                نحن نحول أفكارك الجامحة إلى واقع مرئي مذهل. نصمم أعمالاً احترافية تترك انطباعاً يدوم، لضمان تميز علامتك التجارية بجمالية فريدة وتنفيذ متقن يجذب الأنظار.
+            </p>
+            <a href="#services" class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-navy-900 bg-gold rounded-full hover:bg-goldHover transition duration-300 shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                اكتشف إبداعنا
+                <i class="fa-solid fa-arrow-down mr-3 animate-bounce"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-navy-800 border-t border-navy-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gold mb-4">مجالات إبداعنا</h2>
+                <div class="w-24 h-1 bg-gold mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border border-navy-700 hover:border-gold transition duration-300 group">
+                    <div class="w-16 h-16 bg-navy-800 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold transition duration-300">
+                        <i class="fa-solid fa-laptop-code text-3xl text-gold group-hover:text-navy-900 transition duration-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">تصميم المواقع</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        تصميم مواقع إلكترونية تفاعلية وعصرية مصممة خصيصاً لتعزيز تجربة المستخدم والارتقاء بالحضور الرقمي لعلامتك التجارية.
+                    </p>
+                </div>
+                <!-- Service 2 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border border-navy-700 hover:border-gold transition duration-300 group">
+                    <div class="w-16 h-16 bg-navy-800 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold transition duration-300">
+                        <i class="fa-solid fa-pen-nib text-3xl text-gold group-hover:text-navy-900 transition duration-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">التصميم الجرافيكي</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        ابتكار تصميمات بصرية مذهلة، وصور لا تُنسى، وهويات بصرية متكاملة تجسد جوهر علامتك التجارية ورؤيتها.
+                    </p>
+                </div>
+                <!-- Service 3 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border border-navy-700 hover:border-gold transition duration-300 group">
+                    <div class="w-16 h-16 bg-navy-800 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold transition duration-300">
+                        <i class="fa-solid fa-hashtag text-3xl text-gold group-hover:text-navy-900 transition duration-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">السوشيال ميديا</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        تصميم منشورات جذابة وملفتة لمنصات التواصل الاجتماعي تجذب العملاء وتبني مجتمعات تفاعلية مستدامة.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Portfolio Section -->
+    <section id="portfolio" class="py-20 bg-navy-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold text-gold mb-4">إبداعاتنا البصرية</h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">لمحة من أعمالنا في التصميم الجرافيكي والسوشيال ميديا.</p>
+                <div class="w-24 h-1 bg-gold mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button class="filter-btn active px-6 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-gold hover:text-gold transition font-bold" data-filter="all">الكل</button>
+                <button class="filter-btn px-6 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-gold hover:text-gold transition font-bold" data-filter="social">السوشيال ميديا و اليوتيوب</button>
+                <button class="filter-btn px-6 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-gold hover:text-gold transition font-bold" data-filter="web">مشاريع الويب</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative" id="portfolio-gallery">
+                
+                <!-- YouTube Image -->
+                <div class="portfolio-item social w-full aspect-video bg-navy-800 rounded-xl overflow-hidden border border-navy-700 relative group shadow-lg">
+                    <div class="absolute top-3 right-3 bg-navy-900/90 text-gold px-3 py-1 rounded-md text-sm font-bold border border-gold/30 z-10 shadow-lg pointer-events-none">
+                        صور مصغرة لليوتيوب
+                    </div>
+                    <img src="Untitled design34.jpg" alt="تصميم يوتيوب تعليمي" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gold/90 translate-y-full group-hover:translate-y-0 transition duration-300 flex flex-col justify-center items-center text-navy-900 p-6 text-center z-20">
+                        <h4 class="text-2xl font-bold mb-2">صور مصغرة لليوتيوب</h4>
+                        <p class="font-medium">تصميمات جذابة لزيادة المشاهدات</p>
+                    </div>
+                </div>
+
+                <!-- Beauty Image -->
+                <div class="portfolio-item social w-full aspect-video bg-navy-800 rounded-xl overflow-hidden border border-navy-700 relative group shadow-lg">
+                    <div class="absolute top-3 right-3 bg-navy-900/90 text-gold px-3 py-1 rounded-md text-sm font-bold border border-gold/30 z-10 shadow-lg pointer-events-none">
+                        تصميم عيادات تجميل
+                    </div>
+                    <img src="Untitled design111.jpg" alt="تصميم عيادات تجميل" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gold/90 translate-y-full group-hover:translate-y-0 transition duration-300 flex flex-col justify-center items-center text-navy-900 p-6 text-center z-20">
+                        <h4 class="text-2xl font-bold mb-2">تصميمات طبية وتجميلية</h4>
+                        <p class="font-medium">إبراز النتائج بشكل احترافي</p>
+                    </div>
+                </div>
+
+                <!-- Marketing/Sales Image -->
+                <div class="portfolio-item social w-full aspect-video bg-navy-800 rounded-xl overflow-hidden border border-navy-700 relative group shadow-lg">
+                    <div class="absolute top-3 right-3 bg-navy-900/90 text-gold px-3 py-1 rounded-md text-sm font-bold border border-gold/30 z-10 shadow-lg pointer-events-none">
+                        حملات تسويقية
+                    </div>
+                    <img src="Untitled design (123).jpg" alt="تصميم أعمال ومبيعات" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gold/90 translate-y-full group-hover:translate-y-0 transition duration-300 flex flex-col justify-center items-center text-navy-900 p-6 text-center z-20">
+                        <h4 class="text-2xl font-bold mb-2">حملات تسويقية</h4>
+                        <p class="font-medium">تصميمات تزيد المبيعات وتلفت الانتباه</p>
+                    </div>
+                </div>
+
+                <!-- Real Estate Image -->
+                <div class="portfolio-item social w-full aspect-video bg-navy-800 rounded-xl overflow-hidden border border-navy-700 relative group shadow-lg">
+                    <div class="absolute top-3 right-3 bg-navy-900/90 text-gold px-3 py-1 rounded-md text-sm font-bold border border-gold/30 z-10 shadow-lg pointer-events-none">
+                        تصميمات عقارية
+                    </div>
+                    <img src="Untitled design1231.jpg" alt="تصميم عقارات" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gold/90 translate-y-full group-hover:translate-y-0 transition duration-300 flex flex-col justify-center items-center text-navy-900 p-6 text-center z-20">
+                        <h4 class="text-2xl font-bold mb-2">تصميمات عقارية</h4>
+                        <p class="font-medium">إعلانات احترافية للشركات العقارية</p>
+                    </div>
+                </div>
+
+                <!-- Web Project Link (NEW TEXT DESIGN) -->
+                <a href="https://montasermoussa8-netizen.github.io/Portfolio-/" target="_blank" rel="noopener noreferrer" class="portfolio-item web w-full aspect-video bg-navy-800 rounded-xl overflow-hidden border border-gold/30 relative group block shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all duration-300">
+                    
+                    <div class="absolute top-3 right-3 bg-navy-900/90 text-gold px-3 py-1 rounded-md text-sm font-bold border border-gold/30 z-10 shadow-lg pointer-events-none">
+                        تصميم الموقع
+                    </div>
+                    
+                    <!-- Text-based visual instead of image -->
+                    <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-navy-900 to-navy-800 text-center p-6 relative z-0">
+                        <div class="w-20 h-20 rounded-full bg-navy-800 border border-gold/50 flex items-center justify-center mb-4 group-hover:scale-110 transition duration-500 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                            <i class="fa-solid fa-laptop-code text-4xl text-gold"></i>
+                        </div>
+                        <h3 class="text-4xl md:text-5xl font-extrabold font-cairo text-white tracking-wider mb-3 drop-shadow-md" dir="ltr">WEB SITE</h3>
+                        <p class="text-gold font-bold text-xl px-6 py-2 rounded-full border border-gold/50 bg-navy-900/50 group-hover:bg-gold group-hover:text-navy-900 transition duration-300">
+                            اضغط للدخول للموقع <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>
+                        </p>
+                    </div>
+
+                    <!-- Hover overlay to match other items -->
+                    <div class="absolute inset-0 bg-gold/95 translate-y-full group-hover:translate-y-0 transition duration-300 flex flex-col justify-center items-center text-navy-900 p-6 text-center z-20">
+                        <h4 class="text-3xl font-bold mb-2">تصميم الموقع</h4>
+                        <p class="font-bold text-lg mb-6">برمجة وتصميم موقع متكامل</p>
+                        <span class="inline-block px-6 py-3 bg-navy-900 text-gold rounded-full text-lg font-bold shadow-xl hover:scale-105 transition"><i class="fa-solid fa-link ml-2"></i>زيارة الموقع الآن</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Packages Section with Data Viz -->
+    <section id="packages" class="py-20 bg-navy-800 border-t border-navy-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gold mb-4">باقات الهوية البصرية</h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">اختر الباقة التي تناسب حجم أعمالك وطموحك.</p>
+                <div class="w-24 h-1 bg-gold mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <!-- Chart.js Visualization -->
+            <div class="mb-16 bg-navy-900 p-6 rounded-2xl border border-navy-700 shadow-lg">
+                <h3 class="text-center text-xl text-gray-300 mb-6 font-bold">مقارنة عدد التصميمات في الباقات</h3>
+                <div class="chart-container">
+                    <canvas id="packagesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Package 1 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border border-navy-700 hover:border-gold transition duration-300 flex flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-2">هوية المبتدئ</h3>
+                    <div class="text-3xl font-bold text-gold mb-6">٣٥٠ <span class="text-lg text-gray-400 font-normal">ج.م</span></div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> ٣ تصميمات من اختيارك.</li>
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> مخصصة لمنصتي تيك توك وفيسبوك فقط.</li>
+                    </ul>
+                    <a href="#contact" class="block text-center w-full py-3 rounded-full border border-gold text-gold hover:bg-gold hover:text-navy-900 transition font-bold">اطلب الآن</a>
+                </div>
+
+                <!-- Package 2 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border-2 border-gold relative transform md:-translate-y-4 shadow-[0_10px_30px_rgba(212,175,55,0.15)] flex flex-col">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gold text-navy-900 px-4 py-1 rounded-full text-sm font-bold">الأكثر طلباً</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">هوية المنضبط</h3>
+                    <div class="text-3xl font-bold text-gold mb-6">٥٥٠ <span class="text-lg text-gray-400 font-normal">ج.م</span></div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> ٥ تصميمات من اختيارك.</li>
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> مخصصة لمنصات تيك توك، فيسبوك، انستجرام.</li>
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> إمكانية اختيار نوعية المنشورات.</li>
+                    </ul>
+                    <a href="#contact" class="block text-center w-full py-3 rounded-full bg-gold text-navy-900 hover:bg-goldHover transition font-bold">اطلب الآن</a>
+                </div>
+
+                <!-- Package 3 -->
+                <div class="bg-navy-900 p-8 rounded-2xl border border-navy-700 hover:border-gold transition duration-300 flex flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-2">هوية المحارب</h3>
+                    <div class="text-3xl font-bold text-gold mb-6">١,٠٠٠ <span class="text-lg text-gray-400 font-normal">ج.م</span></div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> ٨ تصميمات احترافية.</li>
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> تغطية شاملة لجميع منصات السوشيال ميديا.</li>
+                        <li class="flex items-start text-gray-300"><i class="fa-solid fa-check text-gold mt-1 ml-3"></i> تصميمات بمختلف المقاسات.</li>
+                    </ul>
+                    <a href="#contact" class="block text-center w-full py-3 rounded-full border border-gold text-gold hover:bg-gold hover:text-navy-900 transition font-bold">اطلب الآن</a>
+                </div>
+            </div>
+
+            <!-- Website Package Banner -->
+            <div class="bg-gradient-to-r from-navy-900 to-navy-800 border border-gold/50 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-20 -top-20 text-gold opacity-5 text-[200px]"><i class="fa-solid fa-globe"></i></div>
+                <div class="md:w-2/3 relative z-10 mb-8 md:mb-0 text-center md:text-right">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gold mb-4">باقة المواقع الإلكترونية</h3>
+                    <h4 class="text-xl text-white mb-4">بناء تواجدك الرقمي المتكامل</h4>
+                    <p class="text-gray-300 leading-relaxed max-w-2xl">
+                        نحول فكرة عملك إلى واجهة رقمية عصرية ومتكاملة، مع التركيز على تقديم تجربة مستخدم سلسة، تصميم واجهة احترافي، وأداء موثوق ومستقر مصمم خصيصاً لتحقيق أهداف علامتك التجارية.
+                    </p>
+                </div>
+                <div class="md:w-1/3 text-center relative z-10">
+                    <div class="text-4xl md:text-5xl font-bold text-white mb-2">٣,٠٠٠ <span class="text-2xl text-gold font-normal">ج.م</span></div>
+                    <div class="text-gray-400 mb-6">للموقع الواحد</div>
+                    <a href="#contact" class="inline-block px-8 py-3 bg-white text-navy-900 font-bold rounded-full hover:bg-gray-200 transition shadow-lg">احجز موقعك</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-20 bg-navy-900 border-t border-navy-700">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gold mb-4">كيف نعمل معاً؟</h2>
+                <div class="w-24 h-1 bg-gold mx-auto rounded-full"></div>
+            </div>
+
+            <div class="timeline-container">
+                <!-- Step 1 -->
+                <div class="timeline-step">
+                    <div class="timeline-icon"><i class="fa-solid fa-1 text-sm"></i></div>
+                    <div class="bg-navy-800 p-6 rounded-xl border border-navy-700 shadow-md mr-8">
+                        <h3 class="text-2xl font-bold text-gold mb-2">البداية</h3>
+                        <p class="text-gray-300">دفع ٥٠٪ مقدماً لتأكيد الجدية وبدء عملية الإبداع والتصميم وفهم متطلبات مشروعك بدقة.</p>
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="timeline-step">
+                    <div class="timeline-icon"><i class="fa-solid fa-2 text-sm"></i></div>
+                    <div class="bg-navy-800 p-6 rounded-xl border border-navy-700 shadow-md mr-8">
+                        <h3 class="text-2xl font-bold text-gold mb-2">التنفيذ</h3>
+                        <p class="text-gray-300">إنجاز التصميمات بعناية واحترافية خلال (٣ أيام إلى أسبوع)، بناءً على حجم العمل ومتطلباته.</p>
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="timeline-step">
+                    <div class="timeline-icon"><i class="fa-solid fa-3 text-sm"></i></div>
+                    <div class="bg-navy-800 p-6 rounded-xl border border-navy-700 shadow-md mr-8">
+                        <h3 class="text-2xl font-bold text-gold mb-2">المراجعة</h3>
+                        <p class="text-gray-300">عرض نسخة أولية (بعلامة مائية) لمراجعتك، ومناقشة أي تعديلات أو إبداء ملاحظاتك عليها.</p>
+                    </div>
+                </div>
+                <!-- Step 4 -->
+                <div class="timeline-step">
+                    <div class="timeline-icon"><i class="fa-solid fa-4 text-sm"></i></div>
+                    <div class="bg-navy-800 p-6 rounded-xl border border-navy-700 shadow-md mr-8">
+                        <h3 class="text-2xl font-bold text-gold mb-2">التسليم النهائي</h3>
+                        <p class="text-gray-300">بعد إنهاء التعديلات واعتمادها، يتم دفع الـ ٥٠٪ المتبقية وتسليم جميع الملفات النهائية بأعلى جودة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Footer -->
+    <section id="contact" class="py-20 bg-navy-800 border-t border-gold/20 relative overflow-hidden">
+        <!-- Abstract shape -->
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gold rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <img src="Untitled design.jpg" alt="شعار خيال" class="h-32 w-auto mx-auto mb-8 opacity-90 object-contain rounded-md">
+            
+            <blockquote class="text-2xl md:text-3xl font-cairo text-white leading-relaxed mb-12 relative inline-block">
+                <span class="absolute -top-6 -right-8 text-6xl text-gold/30">"</span>
+                لا تدع أفكارك حبيسة عقلك — دع <span class="text-gold">وكالة خيال</span> تحولها إلى تصميمات لا ينساها جمهورك.
+                <span class="absolute -bottom-8 -left-8 text-6xl text-gold/30">"</span>
+            </blockquote>
+
+            <h3 class="text-2xl font-bold text-gray-300 mb-8">مستعد للابتكار؟ تواصل معنا الآن</h3>
+
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12">
+                <a href="tel:01111572022" class="flex items-center gap-3 text-xl text-white hover:text-gold transition">
+                    <div class="w-12 h-12 rounded-full bg-navy-900 border border-gold/30 flex items-center justify-center text-gold">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <span dir="ltr">01111572022</span>
+                </a>
+                
+                <!-- Updated Facebook Link -->
+                <a href="https://www.facebook.com/share/18KqVqbokE/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-xl text-white hover:text-gold transition">
+                    <div class="w-12 h-12 rounded-full bg-navy-900 border border-gold/30 flex items-center justify-center text-gold">
+                        <i class="fa-brands fa-facebook-f text-2xl"></i>
+                    </div>
+                    <span dir="ltr">Khayal Agency</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Copyright -->
+    <footer class="bg-navy-900 py-6 border-t border-navy-700 text-center">
+        <p class="text-gray-500 font-medium">جميع الحقوق محفوظة &copy; <span id="year"></span> وكالة خيال.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Current Year for Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 2. Portfolio Filtering Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-gold', 'text-navy-900'));
+                    filterBtns.forEach(b => b.classList.add('text-gray-300'));
+                    
+                    // Add active class to clicked
+                    btn.classList.add('active', 'bg-gold', 'text-navy-900');
+                    btn.classList.remove('text-gray-300');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    portfolioItems.forEach(item => {
+                        if (filterValue === 'all' || item.classList.contains(filterValue)) {
+                            item.classList.remove('hidden-item');
+                            setTimeout(() => {
+                                item.style.display = 'block';
+                            }, 50);
+                        } else {
+                            item.classList.add('hidden-item');
+                            setTimeout(() => {
+                                if(item.classList.contains('hidden-item')){
+                                    item.style.display = 'none';
+                                }
+                            }, 400); // Wait for transition
+                        }
+                    });
+                });
+            });
+
+            // 3. Chart.js Initialization for Packages
+            const ctx = document.getElementById('packagesChart').getContext('2d');
+            
+            // Data from the report
+            const packageNames = ['هوية المبتدئ', 'هوية المنضبط', 'هوية المحارب'];
+            const designCounts = [3, 5, 8];
+            const packagePrices = ['٣٥٠ ج.م', '٥٥٠ ج.م', '١,٠٠٠ ج.م'];
+
+            // Chart configuration with dark theme styling
+            Chart.defaults.color = '#94a3b8'; // text-slate-400
+            Chart.defaults.font.family = "'Tajawal', sans-serif";
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: packageNames,
+                    datasets: [{
+                        label: 'عدد التصميمات المقدمة',
+                        data: designCounts,
+                        backgroundColor: [
+                            'rgba(212, 175, 55, 0.4)', // Gold transparent
+                            'rgba(212, 175, 55, 0.7)', // Gold semi-transparent
+                            'rgba(212, 175, 55, 1)'    // Gold solid
+                        ],
+                        borderColor: [
+                            '#d4af37',
+                            '#d4af37',
+                            '#d4af37'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        barThickness: 'flex',
+                        maxBarThickness: 80
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: "'Cairo', sans-serif", size: 16 },
+                            bodyFont: { family: "'Tajawal', sans-serif", size: 14 },
+                            padding: 12,
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `عدد التصميمات: ${context.raw}`;
+                                },
+                                afterLabel: function(context) {
+                                    return `السعر: ${packagePrices[context.dataIndex]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 14 }
+                            },
+                            title: {
+                                display: true,
+                                text: 'عدد التصميمات',
+                                font: { family: "'Cairo', sans-serif", size: 14, weight: 'bold' }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { family: "'Cairo', sans-serif", size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
